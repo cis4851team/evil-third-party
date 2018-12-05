@@ -111,6 +111,7 @@ def evil_third_party():
     timestamp = datetime.datetime.now()
 
     if hacker_group_name in url:
+        pid = uuid.uuid4().hex
         # want this to work in private mode so can't assume cookie
 
         # normal mode
@@ -130,6 +131,8 @@ def evil_third_party():
 
         # grab the fingerprints that match the current cookie_id
         matched_fingerprints = FingerprintTuple.query.filter_by(cookie_id = cookie_id).with_entities(FingerprintTuple.fingerprint_hash)
+        [print(f'{pid} > Found linked fingerprint {f} for cookie id {cookie_id}') for f in matched_fingerprints]
+
         # linked_fingerprint_tuples = filter(
         #     lambda fingerprint_tuple: fingerprint_tuple[0] == cookie_id,
         #     fingerprint_tuples
@@ -141,6 +144,7 @@ def evil_third_party():
 
         # grab the cookies that are linked to the fingerprints found above
         matched_cookies = FingerprintTuple.query.filter(FingerprintTuple.fingerprint_hash.in_(matched_fingerprints)).with_entities(FingerprintTuple.cookie_id)
+        [print(f'{pid} > Found linked cookie {c}') for c in matched_cookies]
         # linked_cookie_tuples = filter(
         #     lambda fingerprint_tuple: fingerprint_tuple[1] in linked_fingerprints,
         #     fingerprint_tuples
@@ -152,11 +156,13 @@ def evil_third_party():
 
         # grab the urls that are linked to the cookies
         matched_urls = UrlTuple.query.filter(UrlTuple.cookie_id.in_(matched_cookies)).with_entities(UrlTuple.url)
+        [print(f'{pid} > Found linked url {u}') for u in matched_urls]
         # linked_url_tuples = filter(lambda url_tuple: url_tuple[0] in linked_cookies, url_tuples)
         # linked_urls = list(map(lambda url_tuple: url_tuple[1], linked_url_tuples))
 
         def parse_url(url_db):
             url = str(url_db)
+            print(f'{pid} > Parsing linked url: {url}')
             split = url.split('?')
             if len(split) <= 1:
                 return {}
@@ -175,8 +181,12 @@ def evil_third_party():
                     combined_dict[key] = values
 
         names = combined_dict.get('name', [''])
+
+        print(f'{pid} > Extracted names from urls: {names}')
         
         name = names[0]
+
+        print(f'{pid} > Returning message: Gotcha, {name}')
 
         response = make_response(create_advertisement(f'Gotcha, {name}'))
         return response
