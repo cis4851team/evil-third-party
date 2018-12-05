@@ -2,9 +2,7 @@ from flask import Flask, Markup, make_response, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import parse_qs
 from flask_heroku import Heroku
-import uuid
-import sys
-import datetime
+import uuid, sys, datetime, jsonpickle
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -273,7 +271,7 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        return jsonify(db.session.query(UrlTuple).all())
+        return jsonpickle.encode(db.session.query(UrlTuple).all())
     except:
         print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         print()
@@ -283,7 +281,7 @@ def get_url_tuples():
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        return jsonify(db.session.query(FingerprintTuple).all())
+        return jsonpickle.encode(db.session.query(FingerprintTuple).all())
     except:
         print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         print(sys.exc_info()[1])
