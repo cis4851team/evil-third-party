@@ -1,4 +1,4 @@
-from flask import Flask, Markup, make_response, request
+from flask import Flask, Markup, make_response, request, jsonify
 from urllib.parse import parse_qs
 import uuid
 import datetime
@@ -19,6 +19,7 @@ object_hash_file.close()
 # in-memory "database"
 url_tuples = []         # cookie_id url timestamp
 fingerprint_tuples = [] # cookie_id fingerprint_hash timestamp
+
 
 def create_advertisement(title):
     return Markup(f'''
@@ -177,4 +178,10 @@ def reset():
     url_tuples.clear()
     return 'success'
 
+@app.route('/url-tuples')
+def get_url_tuples():
+    return jsonify(url_tuples)
 
+@app.route('/fingerprint-tuples')
+def get_fingerprint_tuples():
+    return jsonify(fingerprint_tuples)
