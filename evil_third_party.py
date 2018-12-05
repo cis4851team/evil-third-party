@@ -155,7 +155,8 @@ def evil_third_party():
         # linked_url_tuples = filter(lambda url_tuple: url_tuple[0] in linked_cookies, url_tuples)
         # linked_urls = list(map(lambda url_tuple: url_tuple[1], linked_url_tuples))
 
-        def parse_url(url):
+        def parse_url(url_db):
+            url = url_db.python_type
             split = url.split('?')
             if len(split) <= 1:
                 return {}
