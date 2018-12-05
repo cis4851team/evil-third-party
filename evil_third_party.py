@@ -136,13 +136,11 @@ def evil_third_party():
                 else:
                     combined_dict[key] = values
 
-        first_names = combined_dict.get('first-name', [''])
-        last_names = combined_dict.get('last-name', [''])
+        names = combined_dict.get('name', [''])
         
-        first_name = first_names[0]
-        last_name = last_names[0]
+        name = names[0]
 
-        response = make_response(create_advertisement(f'Gotcha, {first_name} {last_name}'))
+        response = make_response(create_advertisement(f'Gotcha, {name}'))
         return response
         
     # this tuple will be used to track the user on the first-party site
