@@ -208,7 +208,7 @@ def fingerprints():
     fingerprint_tuples.append(fingerprint_tuple)
     write_fingerprint_tuple_to_db(cookie_id, fingerprint, timestamp)
     
-    return
+    return response
 
 def write_fingerprint_tuple_to_db(cookie_id, fingerprint, timestamp):
     db_data = FingerprintTuple(cookie_id, fingerprint, timestamp)
