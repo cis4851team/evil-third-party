@@ -250,12 +250,14 @@ def write_url_tuple_to_db(cookie_id, url, timestamp):
 def reset():
     fingerprint_tuples.clear()
     url_tuples.clear()
+    UrlTuple.query().delete()
+    FingerprintTuple.query().delete()
     return 'success'
 
 @app.route('/url-tuples')
 def get_url_tuples():
-    return jsonify(url_tuples)
+    return jsonify(UrlTuple.query())
 
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
-    return jsonify(fingerprint_tuples)
+    return jsonify(FingerprintTuple.query())
