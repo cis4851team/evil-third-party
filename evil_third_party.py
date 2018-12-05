@@ -274,7 +274,7 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        return jsonify(db.session.UrlTuple.query().all())
+        return jsonify(db.session.query(UrlTuple).query().all())
     except:
         print(f'Error when resetting tables: {sys.exc_info()[0]}')
         print(sys.exc_info()[1])
@@ -284,7 +284,7 @@ def get_url_tuples():
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        return jsonify(db.session.FingerprintTuple.query().all())
+        return jsonify(db.session.query(FingerprintTuple).query().all())
     except:
         print(f'Error when resetting tables: {sys.exc_info()[0]}')
         print(sys.exc_info()[1])
