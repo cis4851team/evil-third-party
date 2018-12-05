@@ -265,8 +265,7 @@ def reset():
         print(f'{num_records_deleted} records deleted from fingerprint_tuples table')
         db.session.commit()
     except:
-        print(f'Error when resetting tables: {sys.exc_info()[0]}')
-        print(sys.exc_info()[1])
+        print(f'Error when resetting tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
         return 'error - check logs'
     return 'success'
@@ -274,19 +273,19 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        return jsonify(db.session.query(UrlTuple).query().all())
+        return jsonify(db.session.query(UrlTuple).all())
     except:
-        print(f'Error when resetting tables: {sys.exc_info()[0]}')
-        print(sys.exc_info()[1])
+        print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
+        print()
         db.session.rollback()
         return 'error - check logs'
 
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        return jsonify(db.session.query(FingerprintTuple).query().all())
+        return jsonify(db.session.query(FingerprintTuple).all())
     except:
-        print(f'Error when resetting tables: {sys.exc_info()[0]}')
+        print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         print(sys.exc_info()[1])
         db.session.rollback()
         return 'error - check logs'
