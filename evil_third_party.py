@@ -63,7 +63,7 @@ class FingerprintTuple(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
     fingerprint_hash = db.Column(db.Text())
-    timestamp = db.Column(db.text())
+    timestamp = db.Column(db.Text())
 
     def __init__(self, cookie_id, fingerprint_hash, timestamp):
         self.cookie_id = cookie_id
