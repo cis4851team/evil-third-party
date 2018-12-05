@@ -250,8 +250,17 @@ def write_url_tuple_to_db(cookie_id, url, timestamp):
 def reset():
     fingerprint_tuples.clear()
     url_tuples.clear()
-    UrlTuple.query().delete()
-    FingerprintTuple.query().delete()
+    try:
+        num_records_deleted = db.session.query(UrlTuple).delete()
+        print(f'{num_records_deleted} records deleted from url_tuples table')
+        num_records_deleted = db.session.query(FingerprintTuple).delete()
+        print(f'{num_records_deleted} records deleted from fingerprint_tuples table')
+        db.session.commit()
+    except:
+        print(f'Error when resetting tables: {sys.exc_info()[0]}')
+        print(sys.exc_info()[1])
+        db.session.rollback()
+        return 'error - check logs'
     return 'success'
 
 @app.route('/url-tuples')
