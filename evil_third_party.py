@@ -50,7 +50,7 @@ class UrlTuple(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
     url = db.Column(db.Text())
-    timestamp = db.Column(db.text())
+    timestamp = db.Column(db.Text())
 
     def __init__(self, cookie_id, url, timestamp):
         self.cookie_id = cookie_id
