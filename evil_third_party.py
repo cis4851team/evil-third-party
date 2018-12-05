@@ -156,7 +156,7 @@ def evil_third_party():
         # linked_urls = list(map(lambda url_tuple: url_tuple[1], linked_url_tuples))
 
         def parse_url(url_db):
-            url = url_db.python_type
+            url = str(url_db)
             split = url.split('?')
             if len(split) <= 1:
                 return {}
