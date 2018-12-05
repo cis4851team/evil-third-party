@@ -173,6 +173,8 @@ def evil_third_party():
         combined_dict = {}
 
         for parsed_url in parsed_urls:
+            print(f'{pid} > Parsed url contents for {parsed_url}')
+            print('[%s]' % ', '.join(map(str, parsed_url)))
             for key, values in parsed_url.items():
                 if key in combined_dict:
                     for value in values:
