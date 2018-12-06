@@ -3,12 +3,10 @@ import sys
 import uuid
 from urllib.parse import parse_qs
 
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+import jsonpickle
 from flask import Flask, Markup, make_response, request, jsonify
 from flask_heroku import Heroku
-
-
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
@@ -16,7 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'CIS 4851'
 heroku = Heroku(app)
 db = SQLAlchemy(app)
-ma = Marshmallow(app)
 
 fingerprinter_file = open('./fingerprinter.js')
 fingerprinter = fingerprinter_file.read()
@@ -67,11 +64,6 @@ class UrlTuple(db.Model):
         return dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp)
 
 
-class UrlSchema(ma.ModelSchema):
-    class Meta:
-        model = UrlTuple
-
-
 class FingerprintTuple(db.Model):
     __tablename__ = "fingerprint_tuples"
     id = db.Column(db.Integer, primary_key=True)
@@ -86,11 +78,6 @@ class FingerprintTuple(db.Model):
 
     def to_json(self):
         return dict(cookie_id=self.cookie_id, fingerprint_hash=self.fingerprint_hash, timestamp=self.timestamp)
-
-
-class FingerprintSchema(ma.ModelSchema):
-    class Meta:
-        model = FingerprintTuple
 
 
 hacker_group_name = 'hackers_group'
@@ -298,8 +285,7 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        url_schema = UrlSchema()
-        return url_schema.dump(UrlTuple).data
+        return jsonpickle.encode([fp for fp in db.session.query(UrlTuple).all()])
     except:
         print(f'Error when reading url_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
@@ -308,8 +294,7 @@ def get_url_tuples():
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        fingerprint_schema = FingerprintSchema()
-        return fingerprint_schema.dump(FingerprintTuple).data
+        return jsonpickle.encode([fp for fp in db.session.query(FingerprintTuple).all()])
     except:
         print(f'Error when reading fingerprint_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
