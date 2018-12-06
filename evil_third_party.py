@@ -189,12 +189,15 @@ def evil_third_party():
         names = combined_dict.get('name', [''])
 
         print(f'{pid} > Extracted names from urls: {names}')
-        
+
         name = names[0]
 
-        print(f'{pid} > Returning message: Gotcha, {name}')
-
-        response = make_response(create_advertisement(f'Gotcha, {name}'))
+        if name:
+            print(f'{pid} > Returning message: Gotcha, {name}')
+            response = make_response(create_advertisement(f'Gotcha, {name}'))
+        else:
+            print(f'{pid} > Returning message: Free Money')
+            response = make_response(create_advertisement('Free Money'))
         return response
         
     # this tuple will be used to track the user on the first-party site
