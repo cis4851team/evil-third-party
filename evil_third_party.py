@@ -1,8 +1,14 @@
-from flask import Flask, Markup, make_response, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+import datetime
+import sys
+import uuid
 from urllib.parse import parse_qs
+
+from flask import Flask, Markup, make_response, request, jsonify
 from flask_heroku import Heroku
-import uuid, sys, datetime, jsonpickle
+from flask_sqlalchemy import SQLAlchemy
+
+from dict_util import DictSerializable
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -43,7 +49,7 @@ def create_advertisement(title):
     ''')
 
 
-class UrlTuple(db.Model):
+class UrlTuple(db.Model, DictSerializable):
     __tablename__ = "url_tuples"
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
@@ -59,7 +65,7 @@ class UrlTuple(db.Model):
         return dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp)
 
 
-class FingerprintTuple(db.Model):
+class FingerprintTuple(db.Model, DictSerializable):
     __tablename__ = "fingerprint_tuples"
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
@@ -280,29 +286,17 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        u_tuples = db.session.query(UrlTuple).all()
-        return jsonify_db_objects(u_tuples)
+        return jsonify(db.session.query(UrlTuple).all())
     except:
-        print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
-        print()
+        print(f'Error when reading url_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
         return 'error - check logs'
 
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        fp_tuples = db.session.query(FingerprintTuple).all()
-        return jsonify_db_objects(fp_tuples)
+        return jsonify(db.session.query(FingerprintTuple).all())
     except:
-        print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
-        print(sys.exc_info()[1])
+        print(f'Error when reading fingerprint_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
         return 'error - check logs'
-
-def jsonify_db_objects(elem_list):
-    tuples = []
-    for url_tuple in url_tuples:
-        non_db_obj = url_tuples.__dict__.copy()
-        del non_db_obj["_sa_instance_state"]
-        tuples.append(non_db_obj)
-    return jsonify(tuples)
