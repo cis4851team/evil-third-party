@@ -53,11 +53,10 @@ class UrlTuple(db.Model):
     def __init__(self, cookie_id, url, timestamp):
         self.cookie_id = cookie_id
         self.url = url
-        self.timestamp = timestamp
+        self.timestamp = timestamp.isoformat()
 
-    def __repr__(self):
-        return f'{{"cookie_id":"{self.cookie_id}","url":"{self.url}",' \
-               f'"timestamp":"{self.timestamp}"}}'
+    def to_json(self):
+        return dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp)
 
 
 class FingerprintTuple(db.Model):
@@ -70,11 +69,10 @@ class FingerprintTuple(db.Model):
     def __init__(self, cookie_id, fingerprint_hash, timestamp):
         self.cookie_id = cookie_id
         self.fingerprint_hash = fingerprint_hash
-        self.timestamp = timestamp
+        self.timestamp = timestamp.isoformat()
 
-    def __repr__(self):
-        return f'{{"cookie_id":"{self.cookie_id}","fingerprint_hash":"{self.fingerprint_hash}",' \
-               f'"timestamp":"{self.timestamp}"}}'
+    def to_json(self):
+        return dict(cookie_id=self.cookie_id, fingerprint_hash=self.fingerprint_hash, timestamp=self.timestamp)
 
 
 hacker_group_name = 'hackers_group'
@@ -282,7 +280,8 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        return jsonpickle.encode(db.session.query(UrlTuple).all())
+        u_tuples = db.session.query(UrlTuple).all()
+        return jsonify_db_objects(u_tuples)
     except:
         print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         print()
@@ -292,9 +291,18 @@ def get_url_tuples():
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        return jsonpickle.encode(db.session.query(FingerprintTuple).all())
+        fp_tuples = db.session.query(FingerprintTuple).all()
+        return jsonify_db_objects(fp_tuples)
     except:
         print(f'Error when reading tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         print(sys.exc_info()[1])
         db.session.rollback()
         return 'error - check logs'
+
+def jsonify_db_objects(elem_list):
+    tuples = []
+    for url_tuple in url_tuples:
+        non_db_obj = url_tuples.__dict__.copy()
+        del non_db_obj["_sa_instance_state"]
+        tuples.append(non_db_obj)
+    return jsonify(tuples)
