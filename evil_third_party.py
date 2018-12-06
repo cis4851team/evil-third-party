@@ -3,11 +3,12 @@ import sys
 import uuid
 from urllib.parse import parse_qs
 
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask import Flask, Markup, make_response, request, jsonify
 from flask_heroku import Heroku
-from flask_sqlalchemy import SQLAlchemy
 
-from dict_util import DictSerializable
+
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'CIS 4851'
 heroku = Heroku(app)
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 fingerprinter_file = open('./fingerprinter.js')
 fingerprinter = fingerprinter_file.read()
@@ -49,7 +51,7 @@ def create_advertisement(title):
     ''')
 
 
-class UrlTuple(db.Model, DictSerializable):
+class UrlTuple(db.Model):
     __tablename__ = "url_tuples"
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
@@ -65,7 +67,12 @@ class UrlTuple(db.Model, DictSerializable):
         return dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp)
 
 
-class FingerprintTuple(db.Model, DictSerializable):
+class UrlSchema(ma.ModelSchema):
+    class Meta:
+        model = UrlTuple
+
+
+class FingerprintTuple(db.Model):
     __tablename__ = "fingerprint_tuples"
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.Text())
@@ -79,6 +86,11 @@ class FingerprintTuple(db.Model, DictSerializable):
 
     def to_json(self):
         return dict(cookie_id=self.cookie_id, fingerprint_hash=self.fingerprint_hash, timestamp=self.timestamp)
+
+
+class FingerprintSchema(ma.ModelSchema):
+    class Meta:
+        model = FingerprintTuple
 
 
 hacker_group_name = 'hackers_group'
@@ -286,7 +298,8 @@ def reset():
 @app.route('/url-tuples')
 def get_url_tuples():
     try:
-        return jsonify(db.session.query(UrlTuple).all())
+        url_schema = UrlSchema()
+        return url_schema.dump(UrlTuple).data
     except:
         print(f'Error when reading url_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
@@ -295,7 +308,8 @@ def get_url_tuples():
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
     try:
-        return jsonify(db.session.query(FingerprintTuple).all())
+        fingerprint_schema = FingerprintSchema()
+        return fingerprint_schema.dump(FingerprintTuple).data
     except:
         print(f'Error when reading fingerprint_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()

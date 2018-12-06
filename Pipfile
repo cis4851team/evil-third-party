@@ -8,6 +8,7 @@ flask = "*"
 flask-session = "*"
 pymongo = "*"
 flask-heroku = "*"
+flask-marshmallow = "*"
 future = "*"
 gunicorn = "*"
 "psycopg2-binary" = "*"
@@ -16,6 +17,7 @@ Flask-SQLAlchemy = "*"
 SQLAlchemy = "*"
 Werkzeug = "*"
 jsonpickle = "*"
+marshmallow = "*"
 
 [dev-packages]
 
