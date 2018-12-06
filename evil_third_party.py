@@ -61,7 +61,7 @@ class UrlTuple(db.Model):
         self.timestamp = timestamp.isoformat()
 
     def to_json(self):
-        return dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp)
+        return jsonify(dict(cookie_id=self.cookie_id, url=self.url, timestamp=self.timestamp))
 
 
 class FingerprintTuple(db.Model):
@@ -77,7 +77,7 @@ class FingerprintTuple(db.Model):
         self.timestamp = timestamp.isoformat()
 
     def to_json(self):
-        return dict(cookie_id=self.cookie_id, fingerprint_hash=self.fingerprint_hash, timestamp=self.timestamp)
+        return jsonify(dict(cookie_id=self.cookie_id, fingerprint_hash=self.fingerprint_hash, timestamp=self.timestamp))
 
 
 hacker_group_name = 'hackers_group'
@@ -209,7 +209,6 @@ def evil_third_party():
         else:
             print(f'{pid} > Returning message: Free Money')
             response = make_response(create_advertisement('Free Money'))
-        return response
         
     # this tuple will be used to track the user on the first-party site
     # and grab PII leaked from the URL
@@ -279,7 +278,6 @@ def reset():
     except:
         print(f'Error when resetting tables: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
-        return 'error - check logs'
     return 'success'
 
 @app.route('/url-tuples')
@@ -289,7 +287,7 @@ def get_url_tuples():
     except:
         print(f'Error when reading url_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
-        return 'error - check logs'
+        return '[]'
 
 @app.route('/fingerprint-tuples')
 def get_fingerprint_tuples():
@@ -298,4 +296,4 @@ def get_fingerprint_tuples():
     except:
         print(f'Error when reading fingerprint_tuple table: {sys.exc_info()[0]} >>> {sys.exc_info()[1]}')
         db.session.rollback()
-        return 'error - check logs'
+        return '[]'
