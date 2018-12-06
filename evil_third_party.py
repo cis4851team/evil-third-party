@@ -233,6 +233,7 @@ def fingerprints():
 
     timestamp = datetime.datetime.now()
 
+    print(f'Writing fingerprint {fingerprint} to db for cookie {cookie_id}')
     fingerprint_tuple = (cookie_id, fingerprint, timestamp)
     fingerprint_tuples.append(fingerprint_tuple)
     write_fingerprint_tuple_to_db(cookie_id, fingerprint, timestamp)

@@ -23,7 +23,7 @@ function getFingerprint() {
   
   async function uploadFingerprint(fingerprint) {
     if (!fingerprint) return;
-  
+    console.log("js-fingerprint: " + fingerprint);
     await fetch('/fingerprints', {
       method: 'post',
       headers: { 'Content-Type': 'text/plain' },
