@@ -18,7 +18,7 @@ function getFingerprint() {
   
   async function getHashedFingerprint() {
     const fingerprint = await getFingerprint();
-    return objectHash(fingerprint);
+    return fingerprintit;
   }
   
   async function uploadFingerprint(fingerprint) {
