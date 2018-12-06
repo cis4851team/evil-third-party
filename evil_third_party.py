@@ -57,7 +57,7 @@ class UrlTuple(db.Model):
 
     def __repr__(self):
         return f'{{"cookie_id":"{self.cookie_id}","url":"{self.url}",' \
-               f'"timestamp":"{self.timestamp""}}}'
+               f'"timestamp":"{self.timestamp}"}}'
 
 
 class FingerprintTuple(db.Model):
@@ -74,7 +74,7 @@ class FingerprintTuple(db.Model):
 
     def __repr__(self):
         return f'{{"cookie_id":"{self.cookie_id}","fingerprint_hash":"{self.fingerprint_hash}",' \
-               f'"timestamp":"{self.timestamp""}}}'
+               f'"timestamp":"{self.timestamp}"}}'
 
 
 hacker_group_name = 'hackers_group'
