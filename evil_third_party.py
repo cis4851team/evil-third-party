@@ -47,6 +47,18 @@ def create_advertisement(title):
         </html>
     ''')
 
+def create_ad(title):
+    return Markup(f'''
+        <html>
+            <title>
+                Non-Evil Advertisement
+            </title>
+            <body>
+                <h1>{title}</h1>
+            </body>
+        </html>
+    ''')
+
 
 class UrlTuple(db.Model):
     __tablename__ = "url_tuples"
@@ -205,11 +217,11 @@ def evil_third_party():
 
         if name:
             print(f'{pid} > Returning message: Gotcha, {name}')
-            response = make_response(create_advertisement(f'Gotcha, {name}'))
+            response = make_response(create_ad(f'Gotcha, {name}'))
         else:
             print(f'{pid} > Returning message: Free Money')
-            response = make_response(create_advertisement('Free Money'))
-        
+            response = make_response(create_ad('Free Money'))
+
     # this tuple will be used to track the user on the first-party site
     # and grab PII leaked from the URL
     url_tuple = (cookie_id, url, timestamp)
@@ -233,7 +245,6 @@ def fingerprints():
 
     timestamp = datetime.datetime.now()
 
-    print(f'Writing fingerprint {fingerprint} to db for cookie {cookie_id}')
     fingerprint_tuple = (cookie_id, fingerprint, timestamp)
     fingerprint_tuples.append(fingerprint_tuple)
     write_fingerprint_tuple_to_db(cookie_id, fingerprint, timestamp)
@@ -241,6 +252,7 @@ def fingerprints():
     return response
 
 def write_fingerprint_tuple_to_db(cookie_id, fingerprint, timestamp):
+    print(f'Writing fingerprint {fingerprint} to db for cookie {cookie_id}')
     db_data = FingerprintTuple(cookie_id, fingerprint, timestamp)
     log_data = db_data.__dict__.copy()
     del log_data["_sa_instance_state"]
